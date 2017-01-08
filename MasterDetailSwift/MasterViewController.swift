@@ -13,7 +13,6 @@ class MasterViewController: UITableViewController {
   var detailViewController: DetailViewController? = nil
   var objects = [Any]()
 
-
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
@@ -43,17 +42,28 @@ class MasterViewController: UITableViewController {
     self.tableView.insertRows(at: [indexPath], with: .automatic)
   }
 
-  // MARK: - Segues
 
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "showDetail" {
-        if let indexPath = self.tableView.indexPathForSelectedRow {
-            let object = objects[indexPath.row] as! NSDate
-            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-            controller.detailItem = object
-            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-            controller.navigationItem.leftItemsSupplementBackButton = true
-        }
+    switch segue.destination {
+      
+    case let detailViewController as DetailViewController:
+      detailViewController.title = "a title"
+
+
+    case let nav as UINavigationController
+      where nav.topViewController is DetailViewController:
+      guard let detailViewController = nav.topViewController as? DetailViewController,
+        let indexPath = self.tableView.indexPathForSelectedRow
+        else {
+          break
+      }
+      let object = objects[indexPath.row] as! NSDate
+      detailViewController.detailItem = object
+      detailViewController.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+      detailViewController.navigationItem.leftItemsSupplementBackButton = true
+      
+    default:
+      break
     }
   }
 
